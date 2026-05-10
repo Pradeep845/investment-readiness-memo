@@ -7,6 +7,7 @@ import StockTrend from './components/StockTrend'
 import EvidenceList from './components/EvidenceList'
 import KeyFacts from './components/KeyFacts'
 import Pipeline from './components/Pipeline'
+import EvidenceBreakdown from './components/EvidenceBreakdown'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 const log = (...args) => console.log('[IRM]', ...args)
@@ -159,6 +160,7 @@ function App() {
           <RiskFlags items={report.risk_flags} />
           <Catalysts items={report.growth_catalysts} />
           <StockTrend data={report.stock_trend} ticker={form.ticker} />
+          <EvidenceBreakdown items={report.evidence} />
           <KeyFacts items={report.key_facts} />
           <EvidenceList items={report.evidence} />
           <Pipeline diagnostics={report.diagnostics} />

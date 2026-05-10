@@ -63,13 +63,30 @@ function Pipeline({ diagnostics }) {
   const stages = diagnostics.stages || {}
   const timings = diagnostics.timings || {}
 
+  const stageList = STAGE_ORDER.map(([key]) => stages[key] || { status: 'skipped' })
+  const okCount = stageList.filter((s) => s.status === 'ok').length
+  const totalCount = stageList.filter(
+    (s) => s.status !== 'skipped' && s.status !== 'not_requested' && s.status !== 'disabled',
+  ).length
+
   return (
     <section className="card full-width pipeline-card">
       <div className="pipeline-head">
-        <h2>Pipeline Run</h2>
+        <div>
+          <h2>Pipeline Run</h2>
+          <p className="muted small">
+            {okCount} of {totalCount} stages succeeded
+          </p>
+        </div>
         {timings.total_s != null && (
           <span className="pill tone-mute">Total {timings.total_s}s</span>
         )}
+      </div>
+      <div className="pipeline-bar" aria-hidden="true">
+        {stageList.map((s, i) => {
+          const tone = STATUS_TONE[s.status] || 'tone-mute'
+          return <span key={i} className={`pipeline-segment ${tone}`} />
+        })}
       </div>
       <ul className="pipeline-list">
         {STAGE_ORDER.map(([key, label]) => {
