@@ -90,7 +90,7 @@ def build_investability_report(
 
     summary_text = (
         research_payload.get("generatedJson", {}).get("summary")
-        or "Investability analysis generated from website, external research, and market trend signals."
+        or "Investment readiness memo generated from public footprint, external research, and optional market trend signals."
     )
 
     return {

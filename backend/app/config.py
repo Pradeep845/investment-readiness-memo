@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    app_name: str = "VC Lens API"
+    app_name: str = "Investment Readiness Memo API"
     app_env: str = "dev"
     log_level: str = "info"
 

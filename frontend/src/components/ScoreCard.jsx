@@ -3,7 +3,7 @@ function ScoreCard({ score, confidence, summary }) {
 
   return (
     <section className="card">
-      <h2>Investability Score</h2>
+      <h2>Readiness score</h2>
       <p className="score">{score}/100</p>
       <p className="pill">{grade} conviction</p>
       <p className="muted">Confidence: {confidence}</p>

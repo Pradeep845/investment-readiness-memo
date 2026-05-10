@@ -20,7 +20,7 @@ function App() {
 
   const loadingLabel = useMemo(() => {
     if (!loading) return ''
-    return 'Collecting Anakin data, scoring investability, and preparing the report...'
+    return 'Collecting public signals via Anakin and drafting your readiness memo...'
   }, [loading])
 
   const updateField = (event) => {
@@ -60,11 +60,11 @@ function App() {
   return (
     <div className="page">
       <header>
-        <p className="eyebrow">Anakin-powered investing intelligence</p>
-        <h1>VC Lens: Investability Copilot</h1>
+        <p className="eyebrow">Evidence-backed pre-investment brief</p>
+        <h1>Investment Readiness Memo</h1>
         <p className="subtitle">
-          Evaluate startups and public companies with transparent signals from website data, external
-          research, and optional stock trend analysis.
+          Synthesize public footprint, external context, and optional market trend inputs into a single
+          readiness view for startups and listed companies.
         </p>
       </header>
 
@@ -99,7 +99,7 @@ function App() {
           />
         </label>
         <button type="submit" disabled={loading}>
-          {loading ? 'Analyzing...' : 'Run Investability Analysis'}
+          {loading ? 'Drafting memo...' : 'Generate readiness memo'}
         </button>
       </form>
 

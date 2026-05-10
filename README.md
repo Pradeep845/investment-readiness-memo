@@ -1,6 +1,6 @@
-# VC Lens - Investability Copilot
+# Investment Readiness Memo
 
-VC Lens is a hackathon MVP that analyzes whether a company appears investible using Anakin as the data layer.
+Investment Readiness Memo is a hackathon MVP that drafts a structured, evidence-backed view of whether a company looks ready for serious investment consideration, using Anakin as the data layer.
 
 ## What it does
 
@@ -8,7 +8,7 @@ VC Lens is a hackathon MVP that analyzes whether a company appears investible us
 - Scrapes website content using Anakin URL Scraper (batch)
 - Pulls external research signals using Anakin Agentic Search
 - Adds an optional stock trend snapshot (Yahoo chart API)
-- Produces an explainable investability report:
+- Produces an explainable readiness memo:
   - score (0-100)
   - risk flags
   - growth catalysts
