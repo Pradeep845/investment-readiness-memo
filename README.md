@@ -89,7 +89,20 @@ Windows “App execution aliases” can hijack `python`. Either:
 ```
 
 **3. Prefer Python 3.12 for parity with the original dev setup**  
-If you use **Python 3.14**, dependencies should still install; if anything fails, install [Python 3.12](https://www.python.org/downloads/) and recreate the venv with that binary.
+If you use **Python 3.14**, use the pinned `requirements.txt` (Pydantic **2.12+**) so `pydantic-core` ships a matching Windows wheel. If you still see  
+`ModuleNotFoundError: No module named 'pydantic_core._pydantic_core'`, reinstall cleanly:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install --force-reinstall --no-cache-dir -r requirements.txt
+```
+
+If it still fails, recreate the venv with [Python 3.12](https://www.python.org/downloads/) (most reliable for scientific / compiled wheels).
+
+**4. Optional: run without auto-reload** (narrower moving parts while debugging):
+
+```powershell
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
 
 ## Run frontend
 
