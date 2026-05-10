@@ -13,7 +13,7 @@ from app.services.anakin_client import AnakinClient
 from app.services.gemini_polish import polish_memo
 from app.services.holocron_wire import run_wire_signals
 from app.services.scoring import build_investability_report
-from app.services.stock_client import fetch_stock_trend
+from app.services.stock_client import fetch_stock_trend, resolve_ticker
 
 logger = logging.getLogger(__name__)
 
@@ -218,23 +218,45 @@ async def analyze(payload: AnalyzeRequest) -> AnalyzeResponse:
         logger.info("agentic_ok has_summary=%s", has_summary)
 
     stock_signal = None
-    if payload.ticker:
-        t_stock = time.perf_counter()
+    t_stock = time.perf_counter()
+    effective_ticker = (payload.ticker or "").strip().upper() or None
+    auto_resolved = False
+    if not effective_ticker:
         try:
-            stock_signal = await fetch_stock_trend(payload.ticker)
+            resolved = await resolve_ticker(payload.company_name)
+            if resolved:
+                effective_ticker = resolved
+                auto_resolved = True
+                logger.info("ticker_auto_resolved company=%r ticker=%s", payload.company_name, resolved)
+        except Exception as exc:
+            logger.warning("ticker_resolve_failed company=%r error=%r", payload.company_name, exc)
+
+    if effective_ticker:
+        try:
+            stock_signal = await fetch_stock_trend(effective_ticker)
+            if stock_signal and auto_resolved:
+                stock_signal["auto_resolved"] = True
             diagnostics["stock_available"] = bool(stock_signal)
+            diagnostics["stock_ticker"] = effective_ticker
+            diagnostics["stock_auto_resolved"] = auto_resolved
             stages["stock"] = {
                 "status": "ok" if stock_signal else "no_data",
-                "ticker": payload.ticker.upper(),
+                "ticker": effective_ticker,
+                "auto_resolved": auto_resolved,
             }
-            logger.info("stock_ticker=%r ok=%s", payload.ticker, bool(stock_signal))
+            logger.info("stock_ticker=%r ok=%s auto=%s", effective_ticker, bool(stock_signal), auto_resolved)
         except Exception as exc:
             diagnostics["stock_error"] = str(exc)
-            stages["stock"] = {"status": "failed", "ticker": payload.ticker.upper(), "error": str(exc)[:120]}
-            logger.warning("stock_failed ticker=%r error=%r", payload.ticker, exc)
-        timings["stock_s"] = round(time.perf_counter() - t_stock, 2)
+            stages["stock"] = {
+                "status": "failed",
+                "ticker": effective_ticker,
+                "auto_resolved": auto_resolved,
+                "error": str(exc)[:120],
+            }
+            logger.warning("stock_failed ticker=%r error=%r", effective_ticker, exc)
     else:
-        stages["stock"] = {"status": "not_requested"}
+        stages["stock"] = {"status": "no_match", "detail": "No public ticker resolved for company name."}
+    timings["stock_s"] = round(time.perf_counter() - t_stock, 2)
 
     report = build_investability_report(
         company_name=payload.company_name,
@@ -270,6 +292,8 @@ async def analyze(payload: AnalyzeRequest) -> AnalyzeResponse:
                 report["growth_catalysts"] = polished["growth_catalysts"]
             if polished.get("key_facts"):
                 report["key_facts"] = polished["key_facts"]
+            if polished.get("financial_snapshot"):
+                report["financial_snapshot"] = polished["financial_snapshot"]
             diagnostics["gemini_polished"] = True
             stages["gemini"] = {"status": "ok", "key_facts": len(polished.get("key_facts") or [])}
             logger.info("gemini_polished facts=%d", len(polished.get("key_facts") or []))

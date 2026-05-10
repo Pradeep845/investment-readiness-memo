@@ -4,6 +4,12 @@ function scoreTone(score) {
   return { color: '#dc2626', label: 'Cautious', soft: 'rgba(220, 38, 38, 0.12)' }
 }
 
+function pillarTone(score) {
+  if (score >= 70) return '#059669'
+  if (score >= 50) return '#d97706'
+  return '#dc2626'
+}
+
 function ScoreGauge({ score }) {
   const size = 168
   const stroke = 14
@@ -60,23 +66,59 @@ function ScoreGauge({ score }) {
   )
 }
 
-function ScoreCard({ score, confidence, summary }) {
+function PillarBars({ pillars }) {
+  if (!Array.isArray(pillars) || pillars.length === 0) return null
+  return (
+    <div className="hero-breakdown">
+      <div className="hero-breakdown-head">
+        <div className="card-eyebrow">Score breakdown</div>
+        <h3 className="hero-breakdown-title">What drove the score</h3>
+      </div>
+      <ul className="pillar-list">
+        {pillars.map((p) => {
+          const score = Math.max(0, Math.min(100, Number(p.score) || 0))
+          const color = pillarTone(score)
+          return (
+            <li key={p.key} className="pillar-row" title={p.note || ''}>
+              <div className="pillar-head">
+                <span className="pillar-label">{p.label}</span>
+                <span className="pillar-value" style={{ color }}>{score}</span>
+              </div>
+              <div className="pillar-bar">
+                <span className="pillar-bar-fill" style={{ width: `${score}%`, background: color }} />
+              </div>
+            </li>
+          )
+        })}
+      </ul>
+    </div>
+  )
+}
+
+function ScoreCard({ score, confidence, summary, pillars }) {
   const tone = scoreTone(score)
 
   return (
     <section className="card score-card full-width">
       <div className="score-grid">
-        <ScoreGauge score={score} />
-        <div className="score-meta">
-          <h2 className="score-title">Readiness Score</h2>
+        <div className="score-left">
+          <ScoreGauge score={score} />
           <div className="score-pills">
-            <span className="pill" style={{ background: tone.soft, color: tone.color, borderColor: tone.color }}>
+            <span
+              className="pill"
+              style={{ background: tone.soft, color: tone.color, borderColor: tone.color }}
+            >
               {tone.label} conviction
             </span>
             <span className="pill tone-mute">Confidence: {confidence}</span>
           </div>
+        </div>
+        <div className="score-meta">
+          <div className="card-eyebrow">Executive summary</div>
+          <h2 className="score-title">Readiness assessment</h2>
           <p className="score-summary">{summary}</p>
         </div>
+        <PillarBars pillars={pillars} />
       </div>
     </section>
   )

@@ -69,10 +69,11 @@ function EvidenceBreakdown({ items }) {
   const total = items.length
 
   return (
-    <section className="card">
-      <h2>Evidence Mix</h2>
-      <div className="breakdown-grid">
-        <Donut slices={slices} />
+    <section className="card breakdown-card">
+      <div className="card-eyebrow">Evidence mix</div>
+      <h2>How the memo is sourced</h2>
+      <div className="breakdown-body">
+        <Donut slices={slices} size={140} thickness={20} />
         <ul className="legend">
           {slices.map((s) => (
             <li key={s.key}>
@@ -80,7 +81,7 @@ function EvidenceBreakdown({ items }) {
               <span className="legend-label">{s.label}</span>
               <span className="legend-value">
                 {s.value}
-                <span className="muted small"> ({Math.round((s.value / total) * 100)}%)</span>
+                <span className="muted small"> · {Math.round((s.value / total) * 100)}%</span>
               </span>
             </li>
           ))}

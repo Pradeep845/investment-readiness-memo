@@ -25,6 +25,18 @@ _RESPONSE_SCHEMA: dict[str, Any] = {
         "risk_flags": {"type": "ARRAY", "items": {"type": "STRING"}},
         "growth_catalysts": {"type": "ARRAY", "items": {"type": "STRING"}},
         "key_facts": {"type": "ARRAY", "items": {"type": "STRING"}},
+        "financial_snapshot": {
+            "type": "OBJECT",
+            "properties": {
+                "revenue": {"type": "STRING"},
+                "market_cap": {"type": "STRING"},
+                "employees": {"type": "STRING"},
+                "founded": {"type": "STRING"},
+                "headquarters": {"type": "STRING"},
+                "ceo": {"type": "STRING"},
+                "industry": {"type": "STRING"},
+            },
+        },
     },
     "required": ["summary", "risk_flags", "growth_catalysts"],
 }
@@ -72,7 +84,11 @@ def _build_prompt(
         "- summary: 2-3 sentences, neutral analyst tone.\n"
         "- risk_flags: 1-5 short bullets (<=120 chars each), grounded in evidence.\n"
         "- growth_catalysts: 1-5 short bullets (<=120 chars each), grounded in evidence.\n"
-        "- key_facts: 1-5 factual statements (<=120 chars each), no opinions."
+        "- key_facts: 1-5 factual statements (<=120 chars each), no opinions.\n"
+        "- financial_snapshot (object, optional): only fill a field if it can be quoted "
+        "directly from the evidence above (Wikipedia / news / website). Leave any field "
+        "as an empty string when the evidence does not state it. Never guess or estimate. "
+        "Fields: revenue, market_cap, employees, founded, headquarters, ceo, industry."
     )
     return "\n".join(parts)
 
@@ -198,6 +214,12 @@ async def polish_memo(
     risks = [str(x).strip() for x in (parsed.get("risk_flags") or []) if str(x).strip()]
     catalysts = [str(x).strip() for x in (parsed.get("growth_catalysts") or []) if str(x).strip()]
     facts = [str(x).strip() for x in (parsed.get("key_facts") or []) if str(x).strip()]
+    raw_snap = parsed.get("financial_snapshot") or {}
+    snapshot = {
+        k: str(raw_snap.get(k) or "").strip()
+        for k in ("revenue", "market_cap", "employees", "founded", "headquarters", "ceo", "industry")
+    }
+    snapshot = {k: v for k, v in snapshot.items() if v}
 
     if not summary:
         return None
@@ -207,4 +229,5 @@ async def polish_memo(
         "risk_flags": risks[:5],
         "growth_catalysts": catalysts[:5],
         "key_facts": facts[:5],
+        "financial_snapshot": snapshot,
     }

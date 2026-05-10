@@ -2,9 +2,9 @@ function LineChart({ points, direction }) {
   if (!points || points.length < 2) return null
 
   const width = 320
-  const height = 90
+  const height = 96
   const padX = 6
-  const padY = 8
+  const padY = 10
 
   const closes = points.map((p) => p.close)
   const min = Math.min(...closes)
@@ -43,21 +43,40 @@ function LineChart({ points, direction }) {
   )
 }
 
-function StockTrend({ data, ticker }) {
+function fmtPct(value) {
+  if (value === null || value === undefined || Number.isNaN(value)) return '—'
+  const sign = value > 0 ? '+' : ''
+  return `${sign}${value}%`
+}
+
+function fmtPrice(value, currency) {
+  if (value === null || value === undefined || Number.isNaN(value)) return '—'
+  const symbol = currency === 'USD' ? '$' : currency === 'EUR' ? '€' : currency === 'GBP' ? '£' : ''
+  return `${symbol}${Number(value).toLocaleString(undefined, { maximumFractionDigits: 2 })}`
+}
+
+function tone(direction) {
+  return direction === 'up' ? 'good' : direction === 'down' ? 'bad' : 'warn'
+}
+
+function StockTrend({ data, diagnostics }) {
   if (!data) {
-    const enteredTicker = (ticker || '').trim().toUpperCase()
+    const stage = diagnostics?.stages?.stock || {}
+    const attemptedTicker = stage.ticker || diagnostics?.stock_ticker
     return (
-      <section className="card">
-        <h2>Market Trend</h2>
-        {enteredTicker ? (
+      <section className="card stock-card">
+        <div className="card-eyebrow">Market</div>
+        <h2>Market trend</h2>
+        {attemptedTicker ? (
           <p className="muted">
-            Could not fetch a 30-day trend for <strong>{enteredTicker}</strong>. Double-check the symbol
-            (Yahoo / Stooq format, e.g. <code>NVDA</code>, <code>AAPL</code>, <code>TSLA</code>).
+            We located a public listing (<strong>{attemptedTicker}</strong>) but the live data feed did
+            not respond in time. Re-running the memo usually recovers the trend.
           </p>
         ) : (
           <p className="muted">
-            Enter a stock ticker (e.g. <code>NVDA</code>, <code>AAPL</code>) above to layer a 30-day price
-            trend onto the memo.
+            No publicly traded listing was confidently matched for this company. This is expected for
+            private firms, early-stage startups, or subsidiaries — the memo continues to rely on
+            evidence from the website, agentic research, and Wire signals.
           </p>
         )}
       </section>
@@ -67,29 +86,55 @@ function StockTrend({ data, ticker }) {
   const last = data.points[data.points.length - 1]
   const first = data.points[0]
   const directionLabel = data.direction.toUpperCase()
+  const todayDir = (data.today_change_percent ?? 0) > 1 ? 'up' : (data.today_change_percent ?? 0) < -1 ? 'down' : 'flat'
 
   return (
-    <section className="card">
+    <section className="card stock-card">
       <div className="stock-head">
-        <h2>Market Trend · {data.ticker}</h2>
-        <span className={`pill ${data.direction}`}>{directionLabel}</span>
-      </div>
-      <div className="stock-numbers">
         <div>
-          <div className="muted small">30-day change</div>
-          <div className={`stock-change tone-${data.direction === 'up' ? 'good' : data.direction === 'down' ? 'bad' : 'warn'}`}>
-            {data.change_percent > 0 ? '+' : ''}
-            {data.change_percent}%
-          </div>
+          <div className="card-eyebrow">Market</div>
+          <h2>
+            {data.ticker}
+            {data.exchange ? <span className="muted small"> · {data.exchange}</span> : null}
+          </h2>
+          {data.auto_resolved ? (
+            <span className="pill tone-mute auto-pill" title="Ticker matched automatically from the company name via Yahoo Finance.">
+              auto-detected
+            </span>
+          ) : null}
         </div>
-        <div className="stock-range">
-          <div className="muted small">{first?.timestamp} — {last?.timestamp}</div>
-          <div className="muted small">
-            {first?.close} → <strong>{last?.close}</strong>
+        <span className={`pill ${data.direction}`}>30D {directionLabel}</span>
+      </div>
+
+      <div className="stock-price">
+        <div className="stock-price-main">{fmtPrice(data.current_price ?? last?.close, data.currency)}</div>
+        <div className={`stock-price-sub tone-${tone(todayDir)}`}>
+          {fmtPct(data.today_change_percent)} <span className="muted small">today</span>
+        </div>
+      </div>
+
+      <div className="stock-stats">
+        <div className="stock-stat">
+          <div className="muted small">30-day</div>
+          <div className={`stock-stat-val tone-${tone(data.direction)}`}>{fmtPct(data.change_percent)}</div>
+        </div>
+        <div className="stock-stat">
+          <div className="muted small">Prev close</div>
+          <div className="stock-stat-val">{fmtPrice(data.previous_close, data.currency)}</div>
+        </div>
+        <div className="stock-stat">
+          <div className="muted small">30D low → high</div>
+          <div className="stock-stat-val">
+            {fmtPrice(Math.min(...data.points.map((p) => p.close)), data.currency)} →{' '}
+            {fmtPrice(Math.max(...data.points.map((p) => p.close)), data.currency)}
           </div>
         </div>
       </div>
+
       <LineChart points={data.points} direction={data.direction} />
+      <div className="stock-range muted small">
+        {first?.timestamp} — {last?.timestamp}
+      </div>
     </section>
   )
 }

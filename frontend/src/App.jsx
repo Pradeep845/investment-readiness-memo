@@ -8,6 +8,7 @@ import EvidenceList from './components/EvidenceList'
 import KeyFacts from './components/KeyFacts'
 import Pipeline from './components/Pipeline'
 import EvidenceBreakdown from './components/EvidenceBreakdown'
+import CompanyFacts from './components/CompanyFacts'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 const log = (...args) => console.log('[IRM]', ...args)
@@ -16,7 +17,6 @@ function App() {
   const [form, setForm] = useState({
     company_name: '',
     website_url: '',
-    ticker: '',
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -41,7 +41,7 @@ function App() {
     const body = {
       company_name: form.company_name.trim(),
       website_url: form.website_url.trim(),
-      ticker: form.ticker.trim() || null,
+      ticker: null,
     }
     const started = performance.now()
     log('analyze_request_start', { api: API_BASE, body })
@@ -127,15 +127,6 @@ function App() {
             placeholder="https://example.com"
           />
         </label>
-        <label>
-          Stock Ticker (optional)
-          <input
-            name="ticker"
-            value={form.ticker}
-            onChange={updateField}
-            placeholder="AAPL"
-          />
-        </label>
         <button type="submit" disabled={loading}>
           {loading ? 'Drafting memo...' : 'Generate readiness memo'}
         </button>
@@ -156,11 +147,21 @@ function App() {
               . Re-run for the full pipeline.
             </section>
           )}
-          <ScoreCard score={report.score} confidence={report.confidence} summary={report.summary} />
-          <RiskFlags items={report.risk_flags} />
-          <Catalysts items={report.growth_catalysts} />
-          <StockTrend data={report.stock_trend} ticker={form.ticker} />
-          <EvidenceBreakdown items={report.evidence} />
+          <ScoreCard
+            score={report.score}
+            confidence={report.confidence}
+            summary={report.summary}
+            pillars={report.score_breakdown}
+          />
+          <div className="row row-flags">
+            <RiskFlags items={report.risk_flags} />
+            <Catalysts items={report.growth_catalysts} />
+          </div>
+          <div className="row row-metrics">
+            <StockTrend data={report.stock_trend} diagnostics={report.diagnostics} />
+            <CompanyFacts snapshot={report.financial_snapshot} />
+            <EvidenceBreakdown items={report.evidence} />
+          </div>
           <KeyFacts items={report.key_facts} />
           <EvidenceList items={report.evidence} />
           <Pipeline diagnostics={report.diagnostics} />

@@ -142,41 +142,65 @@ def build_investability_report(
     score = 50
     risk_flags: list[str] = []
     catalysts: list[str] = []
+    pillars: list[dict] = []
 
-    if any(term in all_text for term in ["privacy", "terms", "gdpr", "policy"]):
+    has_legal = any(term in all_text for term in ["privacy", "terms", "gdpr", "policy"])
+    if has_legal:
         score += 8
         catalysts.append("Public legal/compliance pages are available.")
+        pillars.append({"key": "legal", "label": "Legal & Compliance", "score": 80, "note": "Privacy / terms pages discoverable."})
     else:
         score -= 10
         risk_flags.append("Legal/compliance visibility appears weak.")
+        pillars.append({"key": "legal", "label": "Legal & Compliance", "score": 30, "note": "No clear privacy/terms footprint."})
 
-    if any(term in all_text for term in ["team", "founder", "leadership", "careers"]):
+    has_team = any(term in all_text for term in ["team", "founder", "leadership", "careers"])
+    if has_team:
         score += 6
         catalysts.append("Organization footprint suggests operating team visibility.")
+        pillars.append({"key": "team", "label": "Team Visibility", "score": 75, "note": "Team / leadership content present."})
     else:
         score -= 5
         risk_flags.append("Limited visible team or leadership proof.")
+        pillars.append({"key": "team", "label": "Team Visibility", "score": 35, "note": "Sparse team / leadership signals."})
 
-    if any(term in all_text for term in ["case study", "customer", "testimonial", "partners"]):
+    has_validation = any(term in all_text for term in ["case study", "customer", "testimonial", "partners"])
+    if has_validation:
         score += 8
         catalysts.append("Market validation signals detected (customers/case studies).")
+        pillars.append({"key": "validation", "label": "Market Validation", "score": 80, "note": "Customers, case studies, or partners cited."})
+    else:
+        pillars.append({"key": "validation", "label": "Market Validation", "score": 50, "note": "Limited explicit customer or partner proof."})
 
-    if any(term in all_text for term in ["lawsuit", "fraud", "investigation", "breach", "penalty"]):
+    has_adverse = any(term in all_text for term in ["lawsuit", "fraud", "investigation", "breach", "penalty"])
+    if has_adverse:
         score -= 15
         risk_flags.append("Potential adverse external signals detected.")
+        pillars.append({"key": "adverse", "label": "Reputation Risk", "score": 25, "note": "Adverse keywords surfaced (lawsuit / breach / penalty)."})
+    else:
+        pillars.append({"key": "adverse", "label": "Reputation Risk", "score": 85, "note": "No adverse keywords in scanned evidence."})
 
     if stock_signal:
         if stock_signal["direction"] == "up":
             score += 6
             catalysts.append("Recent stock trend is positive.")
+            pillars.append({"key": "market", "label": "Market Trend", "score": 78, "note": f"30-day trend up {stock_signal.get('change_percent', 0)}%."})
         elif stock_signal["direction"] == "down":
             score -= 6
             risk_flags.append("Recent stock trend is negative.")
+            pillars.append({"key": "market", "label": "Market Trend", "score": 35, "note": f"30-day trend down {stock_signal.get('change_percent', 0)}%."})
+        else:
+            pillars.append({"key": "market", "label": "Market Trend", "score": 55, "note": "30-day trend flat."})
+    else:
+        pillars.append({"key": "market", "label": "Market Trend", "score": 50, "note": "No ticker provided."})
 
     wire_ok = [w for w in wire_rows if w.get("ok") and w.get("data") is not None]
     if wire_ok:
         score += min(6, 3 * len(wire_ok))
         catalysts.append("Wire (Holocron) returned structured public-source signals.")
+        pillars.append({"key": "external", "label": "External Signals", "score": min(85, 60 + 8 * len(wire_ok)), "note": f"{len(wire_ok)} catalogs returned data."})
+    else:
+        pillars.append({"key": "external", "label": "External Signals", "score": 45, "note": "No external Wire signals returned."})
 
     score = max(0, min(100, score))
 
@@ -246,6 +270,8 @@ def build_investability_report(
         "growth_catalysts": catalysts[:5],
         "summary": summary_text,
         "key_facts": [],
+        "score_breakdown": pillars,
+        "financial_snapshot": {},
         "evidence": [item.model_dump() for item in evidence],
         "stock_trend": stock_signal,
     }
