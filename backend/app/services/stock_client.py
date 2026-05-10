@@ -1,8 +1,11 @@
+import logging
 from datetime import datetime, timezone
 
 import httpx
 
 from app.config import settings
+
+logger = logging.getLogger(__name__)
 
 
 def _build_points_from_yahoo(data: dict) -> list[dict]:
@@ -58,6 +61,8 @@ async def fetch_stock_trend(ticker: str) -> dict | None:
 
     async with httpx.AsyncClient() as client:
         resp = await client.get(url, params=params, timeout=30.0)
+        if resp.status_code != 200:
+            logger.info("stock_yahoo_non_200 ticker=%r status=%s", normalized, resp.status_code)
         points = _build_points_from_yahoo(resp.json()) if resp.status_code == 200 else []
 
         if not points:
@@ -66,8 +71,12 @@ async def fetch_stock_trend(ticker: str) -> dict | None:
             stooq_resp = await client.get(stooq_url, params={"s": stooq_symbol, "i": "d"}, timeout=20.0)
             if stooq_resp.status_code == 200:
                 points = _build_points_from_stooq(stooq_resp.text)
+                logger.info("stock_stooq_points ticker=%r count=%d", normalized, len(points))
+            else:
+                logger.info("stock_stooq_skip ticker=%r status=%s", normalized, stooq_resp.status_code)
 
     if len(points) < 2:
+        logger.info("stock_insufficient_points ticker=%r count=%d", normalized, len(points))
         return None
 
     first_close = points[0]["close"]
@@ -78,9 +87,17 @@ async def fetch_stock_trend(ticker: str) -> dict | None:
     change_percent = round(((last_close - first_close) / first_close) * 100, 2)
     direction = "up" if change_percent > 1 else "down" if change_percent < -1 else "flat"
 
-    return {
+    out = {
         "ticker": normalized,
         "direction": direction,
         "change_percent": change_percent,
         "points": points,
     }
+    logger.info(
+        "stock_ok ticker=%r direction=%s change_pct=%s points=%d",
+        normalized,
+        direction,
+        change_percent,
+        len(points),
+    )
+    return out

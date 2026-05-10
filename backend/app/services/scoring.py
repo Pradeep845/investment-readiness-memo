@@ -1,4 +1,5 @@
 from app.models.schemas import EvidenceItem
+from app.services.holocron_wire import snippet_from_wire_data
 
 
 def _safe_text(value: object) -> str:
@@ -35,7 +36,10 @@ def build_investability_report(
     scrape_payload: dict,
     research_payload: dict,
     stock_signal: dict | None,
+    wire_results: list[dict] | None = None,
 ) -> dict:
+    wire_rows = wire_results or []
+
     text_blob = _extract_scraped_text(scrape_payload)
     research_blob = _safe_text(research_payload.get("generatedJson", {}).get("summary"))
     all_text = f"{text_blob}\n{research_blob}"
@@ -74,6 +78,11 @@ def build_investability_report(
             score -= 6
             risk_flags.append("Recent stock trend is negative.")
 
+    wire_ok = [w for w in wire_rows if w.get("ok") and w.get("data") is not None]
+    if wire_ok:
+        score += min(6, 3 * len(wire_ok))
+        catalysts.append("Wire (Holocron) returned structured public-source signals.")
+
     score = max(0, min(100, score))
 
     evidence: list[EvidenceItem] = []
@@ -88,6 +97,18 @@ def build_investability_report(
             )
         )
 
+    for row in wire_ok[:4]:
+        slug = row.get("catalog_slug") or "holocron"
+        aid = row.get("action_id") or "wire"
+        evidence.append(
+            EvidenceItem(
+                title=f"Wire: {slug}",
+                source=f"holocron:{aid}",
+                url=website_url,
+                snippet=snippet_from_wire_data(row.get("data"), slug=slug, limit=260),
+            )
+        )
+
     summary_text = (
         research_payload.get("generatedJson", {}).get("summary")
         or "Investment readiness memo generated from public footprint, external research, and optional market trend signals."
@@ -99,12 +120,13 @@ def build_investability_report(
         "score": score,
         "confidence": _confidence_from_evidence(
             evidence_count=len(evidence),
-            has_research=bool(research_payload),
-            has_scrape=bool(scrape_payload),
+            has_research=bool((research_payload.get("generatedJson") or {}).get("summary")),
+            has_scrape=bool(scrape_payload.get("results")),
         ),
         "risk_flags": risk_flags[:5],
         "growth_catalysts": catalysts[:5],
         "summary": summary_text,
+        "key_facts": [],
         "evidence": [item.model_dump() for item in evidence],
         "stock_trend": stock_signal,
     }

@@ -58,6 +58,15 @@ Install and start the API **without** activating the venv (works even when Power
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --port 8000
 ```
 
+### Backend logs and long-running Anakin jobs
+
+Set in `backend/.env`:
+
+- `LOG_LEVEL=info` — phase timings, job ids, status changes, heartbeats for stuck `processing` states.
+- `LOG_LEVEL=debug` — every poll line for Map / URL scraper / Agentic Search (verbose).
+
+**Why polling can take minutes:** Anakin **Agentic Search** is an **async job**. `POST /agentic-search` returns a `job_id` immediately; the server then runs multi-stage work (search, scrape citations, synthesize). The backend sends **short** `GET` requests every **10s** until status is `completed` or the **agentic** timeout is hit. You are not waiting on one hung HTTP response — you are waiting for **server-side work** to finish; each poll usually returns quickly with `processing` until the job is done.
+
 ### Windows troubleshooting
 
 **1. `Activate.ps1` cannot be loaded (execution policy)**  
@@ -113,6 +122,28 @@ npm run dev
 ```
 
 Frontend defaults to `http://localhost:5173` and calls backend at `http://localhost:8000`.
+
+### Windows: `npm` is not recognized
+
+Node is usually installed under `C:\Program Files\nodejs`. If PowerShell cannot find `npm`, either:
+
+1. **Close and reopen the terminal** (after Node install or PATH update), or  
+2. Put Node ahead of other tools on PATH for this session:
+
+```powershell
+$env:Path = "C:\Program Files\nodejs;" + $env:Path
+```
+
+3. Or call **`npm.cmd`** (not `npm`) so PowerShell does not try to run `npm.ps1`, which is blocked when script execution is restricted:
+
+```powershell
+& "C:\Program Files\nodejs\npm.cmd" install
+& "C:\Program Files\nodejs\npm.cmd" run dev
+```
+
+If you see `npm.ps1 cannot be loaded because running scripts is disabled`, always use `npm.cmd` as above, or run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once.
+
+If Node is missing entirely, install [Node.js LTS](https://nodejs.org/) or run `winget install OpenJS.NodeJS.LTS`.
 
 ## API endpoint
 

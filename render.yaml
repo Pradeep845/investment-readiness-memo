@@ -1,0 +1,71 @@
+# Render Blueprint — deploys backend + frontend together.
+# After connecting this repo to Render, paste secrets in the dashboard
+# (env vars marked sync: false). No Docker needed.
+
+services:
+  - type: web
+    name: irm-backend
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: ANAKIN_API_KEY
+        sync: false
+      - key: ANAKIN_BASE_URL
+        value: https://api.anakin.io/v1
+      - key: ANAKIN_POLL_SECONDS
+        value: "3"
+      - key: ANAKIN_POLL_TIMEOUT_SECONDS
+        value: "90"
+      - key: ANAKIN_AGENTIC_POLL_SECONDS
+        value: "10"
+      - key: ANAKIN_AGENTIC_POLL_TIMEOUT_SECONDS
+        value: "600"
+      - key: ANALYZE_TOTAL_DEADLINE_SECONDS
+        value: "120"
+      - key: ANALYZE_MAP_DEADLINE_SECONDS
+        value: "35"
+      - key: HOLOCRON_ENABLED
+        value: "true"
+      - key: HOLOCRON_CATALOG_SLUGS
+        value: wikipedia,google_news
+      - key: HOLOCRON_POLL_SECONDS
+        value: "2"
+      - key: HOLOCRON_POLL_TIMEOUT_SECONDS
+        value: "180"
+      - key: HOLOCRON_BETWEEN_CATALOG_SECONDS
+        value: "0.75"
+      - key: GEMINI_ENABLED
+        value: "true"
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-flash-latest
+      - key: GEMINI_TIMEOUT_SECONDS
+        value: "20"
+      - key: STOCK_HISTORY_DAYS
+        value: "30"
+      - key: CORS_ORIGINS
+        sync: false
+      - key: LOG_LEVEL
+        value: info
+
+  - type: web
+    name: irm-frontend
+    env: static
+    rootDir: frontend
+    plan: free
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        sync: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

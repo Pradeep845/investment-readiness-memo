@@ -1,0 +1,800 @@
+[
+  {
+    "slug": "agoda",
+    "name": "Agoda",
+    "domain": "agoda.com",
+    "action_count": 4,
+    "auth_required": false
+  },
+  {
+    "slug": "airbnb",
+    "name": "Airbnb",
+    "domain": "airbnb.com",
+    "action_count": 5,
+    "auth_required": false
+  },
+  {
+    "slug": "aljazeera",
+    "name": "Al Jazeera",
+    "domain": "aljazeera.com",
+    "action_count": 5,
+    "auth_required": false
+  },
+  {
+    "slug": "alternativeto",
+    "name": "AlternativeTo",
+    "domain": "alternativeto.net",
+    "action_count": 3,
+    "auth_required": false
+  },
+  {
+    "slug": "amazon",
+    "name": "Amazon",
+    "domain": "amazon.com",
+    "action_count": 12,
+    "auth_required": true
+  },
+  {
+    "slug": "apnews",
+    "name": "AP News",
+    "domain": "apnews.com",
+    "action_count": 8,
+    "auth_required": false
+  },
+  {
+    "slug": "apollo",
+    "name": "Apollo Pharmacy",
+    "domain": "https://www.apollopharmacy.in/",
+    "action_count": 4,
+    "auth_required": false
+  },
+  {
+    "slug": "arxiv",
+    "name": "arXiv",
+    "domain": "arxiv.org",
+    "action_count": 3,
+    "auth_required": false
+  },
+  {
+    "slug": "bbc",
+    "name": "BBC News",
+    "domain": "bbc.com",
+    "action_count": 8,
+    "auth_required": false
+  },
+  {
+    "slug": "bigbasket",
+    "name": "BigBasket",
+    "domain": "bigbasket.com",
+    "action_count": 4,
+    "auth_required": false
+  },
+  {
+    "slug": "bis",
+    "name": "BIS (Bank for International Settlements)",
+    "domain": "bis.org",
+    "action_count": 6,
+    "auth_required": false
+  },
+  {
+    "slug": "blinkit",
+    "name": "Blinkit",
+    "domain": "blinkit.com",
+    "action_count": 4,
+    "auth_required": false
+  },
+  {
+    "slug": "bls_gov",
+    "name": "BLS (Bureau of Labor Statistics)",
+    "domain": "bls.gov",
+    "action_count": 7,
+    "auth_required": false
+  },
+  {
+    "slug": "booking",
+    "name": "Booking.com",
+    "domain": "booking.com",
+    "action_count": 2,
+    "auth_required": false
+  },
+  {
+    "slug": "bse",
+    "name": "BSE India",
+    "domain": "bseindia.com",
+    "action_count": 15,
+    "auth_required": false
+  },
+  {
+    "slug": "cboe",
+    "name": "CBOE",
+    "domain": "cboe.com",
+    "action_count": 3,
+    "auth_required": false
+  },
+  {
+    "slug": "cftc",
+    "name": "CFTC",
+    "domain": "cftc.gov",
+    "action_count": 2,
+    "auth_required": false
+  },
+  {
+    "slug": "cnbc",
+    "name": "CNBC",
+    "domain": "cnbc.com",
+    "action_count": 9,
+    "auth_required": false
+  },
+  {
+    "slug": "coingecko",
+    "name": "CoinGecko",
+    "domain": "coingecko.com",
+    "action_count": 14,
+    "auth_required": false
+  },
+  {
+    "slug": "corning",
+    "name": "Corning Life Sciences",
+    "domain": "https://ecatalog.corning.com",
+    "action_count": 4,
+    "auth_required": true
+  },
+  {
+    "slug": "costco",
+    "name": "Costco",
+    "domain": "costco.com",
+    "action_count": 7,
+    "auth_required": false
+  },
+  {
+    "slug": "craigslist",
+    "name": "Craigslist",
+    "domain": "craigslist.org",
+    "action_count": 7,
+    "auth_required": false
+  },
+  {
+    "slug": "croma",
+    "name": "Croma",
+    "domain": "croma.com",
+    "action_count": 7,
+    "auth_required": true
+  },
+  {
+    "slug": "cytiva",
+    "name": "Cytiva Life Sciences",
+    "domain": "https://www.cytivalifesciences.com\\",
+    "action_count": 5,
+    "auth_required": true
+  },
+  {
+    "slug": "devto",
+    "name": "DEV Community",
+    "domain": "dev.to",
+    "action_count": 4,
+    "auth_required": false
+  },
+  {
+    "slug": "dolarapp",
+    "name": "DolarApp",
+    "domain": "https://www.arqfinance.com",
+    "action_count": 1,
+    "auth_required": false
+  },
+  {
+    "slug": "drugs_com",
+    "name": "Drugs.com",
+    "domain": "drugs.com",
+    "action_count": 8,
+    "auth_required": false
+  },
+  {
+    "slug": "ebay",
+    "name": "eBay",
+    "domain": "ebay.com",
+    "action_count": 7,
+    "auth_required": false
+  },
+  {
+    "slug": "ecb",
+    "name": "ECB (European Central Bank)",
+    "domain": "ecb.europa.eu",
+    "action_count": 4,
+    "auth_required": false
+  },
+  {
+    "slug": "economic_times",
+    "name": "Economic Times",
+    "domain": "economictimes.indiatimes.com",
+    "action_count": 13,
+    "auth_required": false
+  },
+  {
+    "slug": "eia",
+    "name": "EIA (Energy Information Administration)",
+    "domain": "eia.gov",
+    "action_count": 10,
+    "auth_required": false
+  },
+  {
+    "slug": "espncricinfo",
+    "name": "ESPNcricinfo",
+    "domain": "espncricinfo.com",
+    "action_count": 2,
+    "auth_required": false
+  },
+  {
+    "slug": "fear_greed",
+    "name": "Fear & Greed Index",
+    "domain": "alternative.me",
+    "action_count": 2,
+    "auth_required": false
+  },
+  {
+    "slug": "finviz",
+    "name": "Finviz",
+    "domain": "finviz.com",
+    "action_count": 5,
+    "auth_required": false
+  },
+  {
+    "slug": "fishersci",
+    "name": "Fisher Scientific",
+    "domain": "www.fishersci.com/us/en/home.html",
+    "action_count": 12,
+    "auth_required": false
+  },
+  {
+    "slug": "flipkart",
+    "name": "Flipkart",
+    "domain": "flipkart.com",
+    "action_count": 4,
+    "auth_required": true
+  },
+  {
+    "slug": "fred_stlouisfed",
+    "name": "FRED (St. Louis Fed)",
+    "domain": "fred.stlouisfed.org",
+    "action_count": 15,
+    "auth_required": false
+  },
+  {
+    "slug": "github_public",
+    "name": "GitHub",
+    "domain": "github.com",
+    "action_count": 9,
+    "auth_required": false
+  },
+  {
+    "slug": "goodreads",
+    "name": "Goodreads",
+    "domain": "goodreads.com",
+    "action_count": 4,
+    "auth_required": false
+  },
+  {
+    "slug": "google_flights",
+    "name": "Google Flights",
+    "domain": "google.com",
+    "action_count": 2,
+    "auth_required": false
+  },
+  {
+    "slug": "google_news",
+    "name": "Google News",
+    "domain": "news.google.com",
+    "action_count": 8,
+    "auth_required": false
+  },
+  {
+    "slug": "google_trends",
+    "name": "Google Trends",
+    "domain": "trends.google.com",
+    "action_count": 7,
+    "auth_required": false
+  },
+  {
+    "slug": "guardian",
+    "name": "The Guardian",
+    "domain": "theguardian.com",
+    "action_count": 10,
+    "auth_required": false
+  },
+  {
+    "slug": "hackernews",
+    "name": "Hacker News",
+    "domain": "news.ycombinator.com",
+    "action_count": 4,
+    "auth_required": false
+  },
+  {
+    "slug": "imdb",
+    "name": "IMDb",
+    "domain": "imdb.com",
+    "action_count": 7,
+    "auth_required": false
+  },
+  {
+    "slug": "imf",
+    "name": "IMF (International Monetary Fund)",
+    "domain": "imf.org",
+    "action_count": 7,
+    "auth_required": false
+  },
+  {
+    "slug": "income_tax",
+    "name": "Income Tax India",
+    "domain": "https://www.incometax.gov.in",
+    "action_count": 5,
+    "auth_required": false
+  },
+  {
+    "slug": "indeed",
+    "name": "Indeed",
+    "domain": "indeed.com",
+    "action_count": 4,
+    "auth_required": true
+  },
+  {
+    "slug": "instacart",
+    "name": "Instacart",
+    "domain": "instacart.com",
+    "action_count": 3,
+    "auth_required": true
+  },
+  {
+    "slug": "investing_com",
+    "name": "Investing.com",
+    "domain": "investing.com",
+    "action_count": 6,
+    "auth_required": false
+  },
+  {
+    "slug": "jiomart",
+    "name": "Jiomart",
+    "domain": "jiomart.com",
+    "action_count": 4,
+    "auth_required": false
+  },
+  {
+    "slug": "jobicy",
+    "name": "Jobicy",
+    "domain": "jobicy.com",
+    "action_count": 1,
+    "auth_required": false
+  },
+  {
+    "slug": "kalshi",
+    "name": "Kalshi",
+    "domain": "https://kalshi.com/",
+    "action_count": 35,
+    "auth_required": false
+  },
+  {
+    "slug": "lg-us",
+    "name": "LG US",
+    "domain": "lg.com",
+    "action_count": 3,
+    "auth_required": false
+  },
+  {
+    "slug": "luma",
+    "name": "Luma",
+    "domain": "lu.ma",
+    "action_count": 5,
+    "auth_required": true
+  },
+  {
+    "slug": "manifold",
+    "name": "Manifold Markets",
+    "domain": "https://manifold.markets/",
+    "action_count": 27,
+    "auth_required": false
+  },
+  {
+    "slug": "medium",
+    "name": "Medium",
+    "domain": "medium.com",
+    "action_count": 5,
+    "auth_required": false
+  },
+  {
+    "slug": "meetup",
+    "name": "Meetup",
+    "domain": "meetup.com",
+    "action_count": 4,
+    "auth_required": true
+  },
+  {
+    "slug": "mercadolibre",
+    "name": "Mercado Livre (Brazil)",
+    "domain": "https://www.mercadolivre.com",
+    "action_count": 7,
+    "auth_required": false
+  },
+  {
+    "slug": "miltenyi",
+    "name": "Miltenyi Biotec",
+    "domain": "https://www.miltenyibiotec.com",
+    "action_count": 5,
+    "auth_required": true
+  },
+  {
+    "slug": "moneycontrol",
+    "name": "Moneycontrol",
+    "domain": "https://www.moneycontrol.com/",
+    "action_count": 6,
+    "auth_required": false
+  },
+  {
+    "slug": "nasdaq",
+    "name": "NASDAQ",
+    "domain": "nasdaq.com",
+    "action_count": 14,
+    "auth_required": false
+  },
+  {
+    "slug": "neb",
+    "name": "New England Biolabs",
+    "domain": "neb.com",
+    "action_count": 4,
+    "auth_required": true
+  },
+  {
+    "slug": "netmeds",
+    "name": "Netmeds",
+    "domain": "https://www.netmeds.com",
+    "action_count": 3,
+    "auth_required": false
+  },
+  {
+    "slug": "nike",
+    "name": "Nike",
+    "domain": "nike.com",
+    "action_count": 8,
+    "auth_required": false
+  },
+  {
+    "slug": "nikkei_asia",
+    "name": "Nikkei Asia",
+    "domain": "asia.nikkei.com",
+    "action_count": 8,
+    "auth_required": false
+  },
+  {
+    "slug": "noon",
+    "name": "Noon",
+    "domain": "https://www.noon.com/",
+    "action_count": 7,
+    "auth_required": false
+  },
+  {
+    "slug": "npm",
+    "name": "npm",
+    "domain": "npmjs.com",
+    "action_count": 3,
+    "auth_required": false
+  },
+  {
+    "slug": "nse_india",
+    "name": "NSE India",
+    "domain": "nseindia.com",
+    "action_count": 16,
+    "auth_required": false
+  },
+  {
+    "slug": "polymarket",
+    "name": "Polymarket",
+    "domain": "https://polymarket.com/",
+    "action_count": 16,
+    "auth_required": false
+  },
+  {
+    "slug": "producthunt",
+    "name": "Product Hunt",
+    "domain": "producthunt.com",
+    "action_count": 3,
+    "auth_required": false
+  },
+  {
+    "slug": "pubmed",
+    "name": "PubMed",
+    "domain": "pubmed.ncbi.nlm.nih.gov",
+    "action_count": 4,
+    "auth_required": false
+  },
+  {
+    "slug": "pypi",
+    "name": "PyPI",
+    "domain": "pypi.org",
+    "action_count": 3,
+    "auth_required": false
+  },
+  {
+    "slug": "qiagen",
+    "name": "Qiagen",
+    "domain": "https://www.qiagen.com",
+    "action_count": 4,
+    "auth_required": true
+  },
+  {
+    "slug": "rbi",
+    "name": "RBI",
+    "domain": "https://www.rbi.org.in/",
+    "action_count": 11,
+    "auth_required": false
+  },
+  {
+    "slug": "reddit",
+    "name": "Reddit",
+    "domain": "reddit.com",
+    "action_count": 7,
+    "auth_required": false
+  },
+  {
+    "slug": "reliance_digital",
+    "name": "Reliance Digital",
+    "domain": "reliancedigital.in",
+    "action_count": 4,
+    "auth_required": false
+  },
+  {
+    "slug": "remoteok",
+    "name": "RemoteOK",
+    "domain": "remoteok.com",
+    "action_count": 1,
+    "auth_required": false
+  },
+  {
+    "slug": "reuters",
+    "name": "Reuters",
+    "domain": "reuters.com",
+    "action_count": 8,
+    "auth_required": false
+  },
+  {
+    "slug": "robinhood",
+    "name": "Robinhood",
+    "domain": "https://robinhood.com",
+    "action_count": 7,
+    "auth_required": false
+  },
+  {
+    "slug": "runt",
+    "name": "RUNT Colombia",
+    "domain": "portalpublico.runt.gov.co",
+    "action_count": 1,
+    "auth_required": false
+  },
+  {
+    "slug": "scmp",
+    "name": "South China Morning Post",
+    "domain": "scmp.com",
+    "action_count": 9,
+    "auth_required": false
+  },
+  {
+    "slug": "seats_aero",
+    "name": "seats.aero",
+    "domain": "seats.aero",
+    "action_count": 4,
+    "auth_required": false
+  },
+  {
+    "slug": "sebi",
+    "name": "SEBI",
+    "domain": "sebi.gov.in",
+    "action_count": 15,
+    "auth_required": false
+  },
+  {
+    "slug": "sec_edgar",
+    "name": "SEC EDGAR",
+    "domain": "sec.gov",
+    "action_count": 8,
+    "auth_required": false
+  },
+  {
+    "slug": "semantic_scholar",
+    "name": "Semantic Scholar",
+    "domain": "semanticscholar.org",
+    "action_count": 4,
+    "auth_required": false
+  },
+  {
+    "slug": "shopify",
+    "name": "Shopify Stores",
+    "domain": "shopify.com",
+    "action_count": 7,
+    "auth_required": false
+  },
+  {
+    "slug": "skyscanner",
+    "name": "Skyscanner",
+    "domain": "skyscanner.co.in",
+    "action_count": 3,
+    "auth_required": false
+  },
+  {
+    "slug": "stackoverflow",
+    "name": "StackOverflow",
+    "domain": "stackoverflow.com",
+    "action_count": 7,
+    "auth_required": false
+  },
+  {
+    "slug": "steam",
+    "name": "Steam",
+    "domain": "steampowered.com",
+    "action_count": 9,
+    "auth_required": false
+  },
+  {
+    "slug": "stocktwits",
+    "name": "StockTwits",
+    "domain": "stocktwits.com",
+    "action_count": 3,
+    "auth_required": false
+  },
+  {
+    "slug": "substack",
+    "name": "Substack",
+    "domain": "substack.com",
+    "action_count": 5,
+    "auth_required": false
+  },
+  {
+    "slug": "target",
+    "name": "Target",
+    "domain": "target.com",
+    "action_count": 6,
+    "auth_required": false
+  },
+  {
+    "slug": "tata-1mg",
+    "name": "Tata 1mg",
+    "domain": "https://www.1mg.com",
+    "action_count": 4,
+    "auth_required": false
+  },
+  {
+    "slug": "techcrunch",
+    "name": "TechCrunch",
+    "domain": "techcrunch.com",
+    "action_count": 9,
+    "auth_required": false
+  },
+  {
+    "slug": "trading_economics",
+    "name": "TradingEconomics",
+    "domain": "tradingeconomics.com",
+    "action_count": 3,
+    "auth_required": false
+  },
+  {
+    "slug": "truemeds",
+    "name": "Truemeds",
+    "domain": "https://www.truemeds.in/",
+    "action_count": 4,
+    "auth_required": false
+  },
+  {
+    "slug": "trustpilot",
+    "name": "Trustpilot",
+    "domain": "trustpilot.com",
+    "action_count": 5,
+    "auth_required": false
+  },
+  {
+    "slug": "ubereats",
+    "name": "Uber Eats",
+    "domain": "ubereats.com",
+    "action_count": 5,
+    "auth_required": true
+  },
+  {
+    "slug": "uline",
+    "name": "Uline",
+    "domain": "https://www.uline.com",
+    "action_count": 5,
+    "auth_required": true
+  },
+  {
+    "slug": "us_treasury",
+    "name": "US Treasury",
+    "domain": "treasury.gov",
+    "action_count": 7,
+    "auth_required": false
+  },
+  {
+    "slug": "usascientific",
+    "name": "USA Scientific",
+    "domain": "https://www.usascientific.com/",
+    "action_count": 4,
+    "auth_required": true
+  },
+  {
+    "slug": "vijaysales",
+    "name": "Vijay Sales",
+    "domain": "vijaysales.com",
+    "action_count": 5,
+    "auth_required": true
+  },
+  {
+    "slug": "waalaxy",
+    "name": "Waalaxy",
+    "domain": "waalaxy.com",
+    "action_count": 10,
+    "auth_required": true
+  },
+  {
+    "slug": "walmart",
+    "name": "Walmart",
+    "domain": "walmart.com",
+    "action_count": 8,
+    "auth_required": false
+  },
+  {
+    "slug": "wazirx",
+    "name": "WazirX",
+    "domain": "wazirx.com",
+    "action_count": 2,
+    "auth_required": false
+  },
+  {
+    "slug": "weworkremotely",
+    "name": "We Work Remotely",
+    "domain": "weworkremotely.com",
+    "action_count": 2,
+    "auth_required": false
+  },
+  {
+    "slug": "whois",
+    "name": "WHOIS / Domain Intel",
+    "domain": "rdap.org",
+    "action_count": 3,
+    "auth_required": false
+  },
+  {
+    "slug": "wikipedia",
+    "name": "Wikipedia",
+    "domain": "en.wikipedia.org",
+    "action_count": 5,
+    "auth_required": false
+  },
+  {
+    "slug": "world_bank",
+    "name": "World Bank",
+    "domain": "worldbank.org",
+    "action_count": 22,
+    "auth_required": false
+  },
+  {
+    "slug": "yahoo_finance",
+    "name": "Yahoo Finance",
+    "domain": "finance.yahoo.com",
+    "action_count": 16,
+    "auth_required": false
+  },
+  {
+    "slug": "ycombinator",
+    "name": "Y Combinator",
+    "domain": "ycombinator.com",
+    "action_count": 3,
+    "auth_required": false
+  },
+  {
+    "slug": "youtube",
+    "name": "YouTube",
+    "domain": "youtube.com",
+    "action_count": 6,
+    "auth_required": false
+  },
+  {
+    "slug": "zillow",
+    "name": "Zillow",
+    "domain": "zillow.com",
+    "action_count": 4,
+    "auth_required": false
+  }
+]

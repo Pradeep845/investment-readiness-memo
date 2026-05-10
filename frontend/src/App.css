@@ -142,3 +142,64 @@ li {
 .evidence-list a {
   color: #93c5fd;
 }
+
+.evidence-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.source-pill {
+  font-size: 0.7rem;
+  background: #0f172a;
+  color: #cbd5f5;
+}
+
+.fact-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+}
+
+.fact-list li {
+  border: 1px solid #1f2937;
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 0.9rem;
+}
+
+.banner-warning {
+  border-color: #b45309;
+  background: rgba(180, 83, 9, 0.18);
+  color: #fde68a;
+}
+
+.banner-info {
+  border-color: #4338ca;
+  background: rgba(67, 56, 202, 0.18);
+  color: #c7d2fe;
+}
+
+.debug-panel pre {
+  text-align: left;
+  font-size: 0.75rem;
+  overflow: auto;
+  max-height: 14rem;
+  margin: 0.5rem 0 0;
+  padding: 0.5rem;
+  background: #0f172a;
+  border-radius: 0.35rem;
+  border: 1px solid #334155;
+}
+
+.debug-panel summary {
+  cursor: pointer;
+  color: #94a3b8;
+  font-weight: 600;
+}
