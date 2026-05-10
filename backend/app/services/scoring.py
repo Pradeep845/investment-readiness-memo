@@ -1,3 +1,5 @@
+from urllib.parse import quote
+
 from app.models.schemas import EvidenceItem
 from app.services.holocron_wire import snippet_from_wire_data
 
@@ -20,6 +22,99 @@ def _extract_scraped_text(scrape_payload: dict) -> str:
         if generated:
             chunks.append(str(generated))
     return "\n".join(chunks).lower()
+
+
+def _strip_search_highlights(text: str) -> str:
+    return text.replace('<span class="searchmatch">', "").replace("</span>", "")
+
+
+def _clean_markdown_snippet(markdown: str, limit: int = 220) -> str:
+    if not markdown:
+        return ""
+    lines = [line.strip() for line in markdown.splitlines() if line.strip()]
+    cleaned: list[str] = []
+    for line in lines:
+        if line.startswith(("#", "*", "-", "|", "[", "!")):
+            line = line.lstrip("#*-| ").strip()
+        if not line or line.startswith("http"):
+            continue
+        cleaned.append(line)
+        if sum(len(c) for c in cleaned) > limit:
+            break
+    text = " ".join(cleaned)
+    return text[:limit].rstrip()
+
+
+def _readable_page_title(url: str, markdown: str) -> str:
+    for line in (markdown or "").splitlines():
+        s = line.strip()
+        if s.startswith("#"):
+            t = s.lstrip("#").strip()
+            if t:
+                return t[:90]
+    if not url:
+        return "Website Evidence"
+    path = url.rsplit("/", 1)[-1] or url
+    return path[:80] or "Website Evidence"
+
+
+def _wikipedia_url(title: str, pageid: int | None) -> str:
+    if pageid:
+        return f"https://en.wikipedia.org/?curid={pageid}"
+    safe = quote((title or "").replace(" ", "_"))
+    return f"https://en.wikipedia.org/wiki/{safe}"
+
+
+def _expand_wikipedia(data: dict, *, limit: int) -> list[dict[str, str]]:
+    results = data.get("results") if isinstance(data, dict) else None
+    if not isinstance(results, list):
+        return []
+    out: list[dict[str, str]] = []
+    for r in results[:limit]:
+        if not isinstance(r, dict):
+            continue
+        title = (r.get("title") or "").strip()
+        if not title:
+            continue
+        snip = _strip_search_highlights((r.get("snippet") or "").strip())
+        out.append(
+            {
+                "title": title[:80],
+                "snippet": snip[:220] or "Reference page on Wikipedia.",
+                "url": _wikipedia_url(title, r.get("pageid")),
+            }
+        )
+    return out
+
+
+def _expand_google_news(data: dict, *, limit: int) -> list[dict[str, str]]:
+    items: list = []
+    if isinstance(data, dict):
+        for key in ("data", "results", "articles", "stories"):
+            v = data.get(key)
+            if isinstance(v, list):
+                items = v
+                break
+    out: list[dict[str, str]] = []
+    for r in items[:limit]:
+        if not isinstance(r, dict):
+            continue
+        title = (r.get("title") or r.get("headline") or "").strip()
+        url = (r.get("url") or r.get("link") or "").strip()
+        publisher = r.get("publisher") or r.get("source") or ""
+        if not title or not url:
+            continue
+        snippet_parts = [str(publisher)] if publisher else []
+        if r.get("published_at"):
+            snippet_parts.append(str(r["published_at"]))
+        out.append(
+            {
+                "title": title[:120],
+                "snippet": " · ".join(snippet_parts)[:200] or "News article.",
+                "url": url,
+            }
+        )
+    return out
 
 
 def _confidence_from_evidence(evidence_count: int, has_research: bool, has_scrape: bool) -> str:
@@ -86,28 +181,52 @@ def build_investability_report(
     score = max(0, min(100, score))
 
     evidence: list[EvidenceItem] = []
-    for item in scrape_payload.get("results", [])[:5]:
+    for item in scrape_payload.get("results", [])[:6]:
         src = item.get("url") or item.get("result", {}).get("url") or website_url
+        markdown = item.get("markdown") or item.get("result", {}).get("markdown") or ""
+        title = _readable_page_title(src, markdown)
         evidence.append(
             EvidenceItem(
-                title="Website Evidence",
+                title=title,
                 source="url-scraper",
                 url=src,
-                snippet=(item.get("markdown", "") or "")[:160],
+                snippet=_clean_markdown_snippet(markdown),
             )
         )
 
-    for row in wire_ok[:4]:
+    for row in wire_ok:
         slug = row.get("catalog_slug") or "holocron"
         aid = row.get("action_id") or "wire"
-        evidence.append(
-            EvidenceItem(
-                title=f"Wire: {slug}",
-                source=f"holocron:{aid}",
-                url=website_url,
-                snippet=snippet_from_wire_data(row.get("data"), slug=slug, limit=260),
+        data = row.get("data") or {}
+        if slug == "wikipedia":
+            for w in _expand_wikipedia(data, limit=3):
+                evidence.append(
+                    EvidenceItem(
+                        title=f"Wikipedia · {w['title']}",
+                        source=f"holocron:{aid}",
+                        url=w["url"],
+                        snippet=w["snippet"],
+                    )
+                )
+        elif slug == "google_news":
+            for n in _expand_google_news(data, limit=4):
+                evidence.append(
+                    EvidenceItem(
+                        title=f"News · {n['title']}",
+                        source=f"holocron:{aid}",
+                        url=n["url"],
+                        snippet=n["snippet"],
+                    )
+                )
+        else:
+            evidence.append(
+                EvidenceItem(
+                    title=f"Wire · {slug}",
+                    source=f"holocron:{aid}",
+                    url=website_url,
+                    snippet=snippet_from_wire_data(data, slug=slug, limit=260),
+                )
             )
-        )
 
     summary_text = (
         research_payload.get("generatedJson", {}).get("summary")

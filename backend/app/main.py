@@ -66,16 +66,27 @@ async def analyze(payload: AnalyzeRequest) -> AnalyzeResponse:
 
     client = AnakinClient()
     diagnostics: dict = {}
+    timings: dict[str, float] = {}
+    stages: dict[str, dict[str, Any]] = {
+        "map": {"status": "skipped"},
+        "scrape": {"status": "skipped"},
+        "agentic": {"status": "skipped"},
+        "holocron": {"status": "skipped"},
+        "stock": {"status": "skipped"},
+        "gemini": {"status": "skipped"},
+    }
 
     total_deadline = max(30, settings.analyze_total_deadline_seconds)
     map_budget = max(10, min(settings.analyze_map_deadline_seconds, total_deadline - 20))
 
+    t_map = time.perf_counter()
     try:
         urls = await asyncio.wait_for(
             client.discover_urls(str(payload.website_url)),
             timeout=map_budget,
         )
         diagnostics["discovered_url_count"] = len(urls)
+        stages["map"] = {"status": "ok", "urls_found": len(urls)}
         logger.info(
             "map_done url_count=%d elapsed_s=%.2f sample_urls=%s",
             len(urls),
@@ -85,11 +96,14 @@ async def analyze(payload: AnalyzeRequest) -> AnalyzeResponse:
     except asyncio.TimeoutError:
         urls = [str(payload.website_url)]
         diagnostics["map_error"] = f"map_timeout_after_{map_budget}s"
+        stages["map"] = {"status": "timeout", "fallback": "homepage_only"}
         logger.warning("map_timeout fallback=homepage_only budget_s=%s", map_budget)
     except Exception as exc:
         urls = [str(payload.website_url)]
         diagnostics["map_error"] = str(exc)
+        stages["map"] = {"status": "failed", "error": str(exc)[:120], "fallback": "homepage_only"}
         logger.warning("map_failed fallback=homepage_only error=%r", exc)
+    timings["map_s"] = round(time.perf_counter() - t_map, 2)
 
     scrape_payload: dict = {}
     research_payload: dict = {}
@@ -139,6 +153,8 @@ async def analyze(payload: AnalyzeRequest) -> AnalyzeResponse:
     research_result = _result_or_exc(research_task)
     wire_result = _result_or_exc(wire_task)
 
+    timings["parallel_s"] = round(time.perf_counter() - t_parallel, 2)
+
     if deadline_hit:
         diagnostics["partial"] = True
         diagnostics["deadline_seconds"] = total_deadline
@@ -153,17 +169,30 @@ async def analyze(payload: AnalyzeRequest) -> AnalyzeResponse:
     wire_rows: list = []
     if isinstance(wire_result, Exception):
         diagnostics["holocron_error"] = str(wire_result)
+        stages["holocron"] = {
+            "status": "cancelled" if "deadline_exceeded" in str(wire_result) else "failed",
+            "error": str(wire_result)[:120],
+        }
         logger.warning("holocron_phase_failed error=%r", wire_result)
     else:
         wire_rows = wire_result
         ok_slugs = [r.get("catalog_slug") for r in wire_rows if r.get("ok")]
         diagnostics["holocron"] = wire_rows
         diagnostics["holocron_ok_count"] = len(ok_slugs)
+        stages["holocron"] = {
+            "status": "ok" if ok_slugs else "empty",
+            "ok_slugs": ok_slugs,
+            "total_rows": len(wire_rows),
+        }
         logger.info("holocron_phase_done ok_slugs=%s", ok_slugs)
 
     if isinstance(scrape_result, Exception):
         diagnostics["scrape_error"] = str(scrape_result)
         scrape_payload = {"results": []}
+        stages["scrape"] = {
+            "status": "cancelled" if "deadline_exceeded" in str(scrape_result) else "failed",
+            "error": str(scrape_result)[:120],
+        }
         logger.warning(
             "scrape_skipped error=%r (memo will use agentic + holocron only)",
             scrape_result,
@@ -171,25 +200,41 @@ async def analyze(payload: AnalyzeRequest) -> AnalyzeResponse:
     else:
         scrape_payload = scrape_result
         n_results = len(scrape_payload.get("results") or [])
+        stages["scrape"] = {"status": "ok", "pages_scraped": n_results}
         logger.info("scrape_ok result_rows=%d", n_results)
 
     if isinstance(research_result, Exception):
         diagnostics["agentic_search_error"] = str(research_result)
         research_payload = {}
+        stages["agentic"] = {
+            "status": "cancelled" if "deadline_exceeded" in str(research_result) else "failed",
+            "error": str(research_result)[:120],
+        }
         logger.warning("agentic_skipped error=%r (memo will use website scrape only)", research_result)
     else:
         research_payload = research_result
-        logger.info("agentic_ok has_summary=%s", bool((research_payload.get("generatedJson") or {}).get("summary")))
+        has_summary = bool((research_payload.get("generatedJson") or {}).get("summary"))
+        stages["agentic"] = {"status": "ok" if has_summary else "empty"}
+        logger.info("agentic_ok has_summary=%s", has_summary)
 
     stock_signal = None
     if payload.ticker:
+        t_stock = time.perf_counter()
         try:
             stock_signal = await fetch_stock_trend(payload.ticker)
             diagnostics["stock_available"] = bool(stock_signal)
+            stages["stock"] = {
+                "status": "ok" if stock_signal else "no_data",
+                "ticker": payload.ticker.upper(),
+            }
             logger.info("stock_ticker=%r ok=%s", payload.ticker, bool(stock_signal))
         except Exception as exc:
             diagnostics["stock_error"] = str(exc)
+            stages["stock"] = {"status": "failed", "ticker": payload.ticker.upper(), "error": str(exc)[:120]}
             logger.warning("stock_failed ticker=%r error=%r", payload.ticker, exc)
+        timings["stock_s"] = round(time.perf_counter() - t_stock, 2)
+    else:
+        stages["stock"] = {"status": "not_requested"}
 
     report = build_investability_report(
         company_name=payload.company_name,
@@ -201,6 +246,7 @@ async def analyze(payload: AnalyzeRequest) -> AnalyzeResponse:
     )
 
     if settings.gemini_enabled and settings.gemini_api_key:
+        t_gemini = time.perf_counter()
         try:
             polished = await polish_memo(
                 company_name=payload.company_name,
@@ -225,10 +271,18 @@ async def analyze(payload: AnalyzeRequest) -> AnalyzeResponse:
             if polished.get("key_facts"):
                 report["key_facts"] = polished["key_facts"]
             diagnostics["gemini_polished"] = True
+            stages["gemini"] = {"status": "ok", "key_facts": len(polished.get("key_facts") or [])}
             logger.info("gemini_polished facts=%d", len(polished.get("key_facts") or []))
         else:
             diagnostics.setdefault("gemini_polished", False)
+            stages["gemini"] = {"status": "failed" if diagnostics.get("gemini_error") else "empty"}
+        timings["gemini_s"] = round(time.perf_counter() - t_gemini, 2)
+    else:
+        stages["gemini"] = {"status": "disabled"}
 
+    timings["total_s"] = round(time.perf_counter() - t0, 2)
+    diagnostics["timings"] = timings
+    diagnostics["stages"] = stages
     report["diagnostics"] = diagnostics
 
     logger.info(

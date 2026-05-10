@@ -6,6 +6,7 @@ import Catalysts from './components/Catalysts'
 import StockTrend from './components/StockTrend'
 import EvidenceList from './components/EvidenceList'
 import KeyFacts from './components/KeyFacts'
+import Pipeline from './components/Pipeline'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 const log = (...args) => console.log('[IRM]', ...args)
@@ -96,8 +97,11 @@ function App() {
         <p className="eyebrow">Evidence-backed pre-investment brief</p>
         <h1>Investment Readiness Memo</h1>
         <p className="subtitle">
-          Synthesize public footprint, external context, and optional market trend inputs into a single
-          readiness view for startups and listed companies.
+          Drop in a company website (and optional ticker). We map the site, scrape the most useful pages,
+          run agentic research across the open web, pull structured signals from Wire (Holocron) catalogs
+          like Wikipedia and Google News, optionally fetch a 30-day stock trend, and synthesize the
+          findings into a concise analyst-style memo with a readiness score, risk flags, growth catalysts,
+          and traceable evidence.
         </p>
       </header>
 
@@ -151,27 +155,20 @@ function App() {
               . Re-run for the full pipeline.
             </section>
           )}
-          {report.diagnostics?.gemini_polished && (
-            <section className="card full-width banner-info">
-              Synthesized by Gemini using website, agentic research, and Wire signals.
-            </section>
-          )}
           <ScoreCard score={report.score} confidence={report.confidence} summary={report.summary} />
           <RiskFlags items={report.risk_flags} />
           <Catalysts items={report.growth_catalysts} />
-          <StockTrend data={report.stock_trend} />
+          <StockTrend data={report.stock_trend} ticker={form.ticker} />
           <KeyFacts items={report.key_facts} />
           <EvidenceList items={report.evidence} />
-          {report.diagnostics && Object.keys(report.diagnostics).length > 0 && (
-            <section className="card full-width debug-panel">
-              <details>
-                <summary>Pipeline diagnostics (matches backend logs)</summary>
-                <pre>{JSON.stringify(report.diagnostics, null, 2)}</pre>
-              </details>
-            </section>
-          )}
+          <Pipeline diagnostics={report.diagnostics} />
         </main>
       )}
+
+      <footer className="page-footer muted small">
+        Sources: Anakin Map, URL Scraper, Agentic Search, Wire (Holocron) · Market data via Yahoo Finance / Stooq
+        {report?.diagnostics?.gemini_polished ? ' · Narrative synthesis by Gemini' : ''}
+      </footer>
     </div>
   )
 }
