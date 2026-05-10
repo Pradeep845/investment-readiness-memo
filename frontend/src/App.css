@@ -1,0 +1,144 @@
+.page {
+  width: min(1080px, 100%);
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+header {
+  margin-bottom: 1.5rem;
+}
+
+.eyebrow {
+  color: #8b5cf6;
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+}
+
+.subtitle {
+  max-width: 68ch;
+  color: #94a3b8;
+}
+
+.analyze-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-weight: 600;
+}
+
+input {
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.5rem;
+}
+
+button {
+  border: none;
+  border-radius: 0.5rem;
+  background: #7c3aed;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.8rem 1rem;
+  align-self: end;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.status {
+  color: #93c5fd;
+}
+
+.error {
+  color: #fca5a5;
+  font-weight: 600;
+}
+
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.9rem;
+  margin-top: 1.2rem;
+}
+
+.card {
+  border: 1px solid #334155;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background: #111827;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.score {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0.25rem 0 0.5rem;
+}
+
+.pill {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.pill.up {
+  color: #86efac;
+}
+
+.pill.down {
+  color: #fca5a5;
+}
+
+.pill.flat {
+  color: #fcd34d;
+}
+
+.muted {
+  color: #94a3b8;
+}
+
+ul {
+  margin: 0.6rem 0 0;
+  padding-left: 1rem;
+}
+
+li {
+  margin-bottom: 0.4rem;
+}
+
+.sparkline {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.sparkline span {
+  font-size: 0.75rem;
+  border: 1px solid #334155;
+  border-radius: 0.35rem;
+  padding: 0.15rem 0.35rem;
+}
+
+.evidence-list a {
+  color: #93c5fd;
+}
